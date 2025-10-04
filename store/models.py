@@ -1,14 +1,15 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from phonenumber_field.modelfields import PhoneNumberField
 
 class Userprofile(AbstractUser):
     age = models.PositiveIntegerField(validators=[MinValueValidator(15),MaxValueValidator(70)],null=True,blank=True)
-    phone_number = PhoneNumberField()    STATUS_CHOICES = (
+    phone_number = PhoneNumberField()
+    STATUS_CHOICES = (
         ('gold', 'gold'), #75%
         ('sitve', 'silver'), #50%
-        ('bronze"', 'bronze'),#25%
+        ('bronze"', 'bronze'),#25%py
         ('siple', 'siple')) #0%
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='simple')
     created_data = models.DateTimeField(auto_created=True)
@@ -46,3 +47,11 @@ class Review(models.Model):
     comment = models.TextField()
     stars = models.CharField(choices=[(i, str(i)) for i in range(1, 6)])
 
+
+class Cart(models.Model):
+    user = models.OneToOneField(Userprofile, on_delete=models.CASCADE)
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField(default=1)
